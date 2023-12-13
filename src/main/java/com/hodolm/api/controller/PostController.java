@@ -1,5 +1,6 @@
 package com.hodolm.api.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hodolm.api.domain.Post;
 import com.hodolm.api.request.PostCreate;
+import com.hodolm.api.response.PostResponse;
 import com.hodolm.api.service.PostService;
 
 import lombok.RequiredArgsConstructor;
@@ -110,11 +112,37 @@ public class PostController {
 	 * /posts/{postId} -> 글 한개만 조회
 	 */
 	
+//	@GetMapping("/posts/{postId}")
+//	public Post get(@PathVariable(name = "postId") Long id) {
+//		Post post = postService.get(id);
+//		
+//		return post;
+//		
+//	}
+	
 	@GetMapping("/posts/{postId}")
-	public Post get(@PathVariable(name = "postId") Long id) {
-		Post post = postService.get(id);
+	public PostResponse get(@PathVariable(name = "postId") Long id) {
+		PostResponse post = postService.get(id);
+		
+		// Request 클래스 -> PostCreate
+		// Response 클래스 -> PostResponse
 		
 		return post;
 		
+	}
+	
+//	@GetMapping("/posts/{postId}/rss")
+//	public Post getRss(@PathVariable(name = "postId") Long id) {
+//		Post post = postService.getRss(id);
+//		
+//		return post;
+//		
+//	}
+	
+	// 여러개의 글 조회
+	@GetMapping("/posts")
+	public List<PostResponse> getList() {
+		
+		return postService.getList();
 	}
 }

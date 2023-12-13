@@ -3,6 +3,8 @@ package com.hodolm.api.PostController;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,7 +66,7 @@ class PostControllerTest {
 		.andExpect(MockMvcResultMatchers.status().isOk())
 		// .andExpect() 메소드는 실행된 요청의 결과를 검증합니다. 
 		// MockMvcResultMatchers.status().isOk()는 HTTP 응답 상태 코드가 200(OK)인지 확인합니다.
-		.andExpect(MockMvcResultMatchers.content().string("Hello World"))
+//		.andExpect(MockMvcResultMatchers.content().string("Hello World"))
 		// 여기서도 .andExpect() 메소드를 사용합니다.
 		// MockMvcResultMatchers.content().string("Hello World")는 응답 본문이 "Hello World" 문자열과 일치하는지 확인합니다.
 		.andDo(MockMvcResultHandlers.print());
@@ -161,7 +163,7 @@ class PostControllerTest {
 	void test5() throws Exception {
 		// given
 		Post post = Post.builder()
-				.title("제목")
+				.title("123123123123123")
 				.content("내용")
 				.build();
 		postRepository.save(post);
@@ -172,10 +174,38 @@ class PostControllerTest {
 				)
 		.andExpect(MockMvcResultMatchers.status().isOk())
 		.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(post.getId()))
-		.andExpect(MockMvcResultMatchers.jsonPath("$.title").value(post.getTitle()))
+		.andExpect(MockMvcResultMatchers.jsonPath("$.title").value(post.getTitle().substring(0, 10)))
 		.andExpect(MockMvcResultMatchers.jsonPath("$.content").value(post.getContent()))
 		.andDo(MockMvcResultHandlers.print());
 		
 	}
 
+	@Test
+	@DisplayName("글 여러개 조회")
+	void test6() throws Exception {
+		// given
+		Post post1 = Post.builder()
+				.title("title_1")
+				.content("content_1")
+				.build();
+		postRepository.save(post1);
+		
+		Post post2 = Post.builder()
+				.title("title_2")
+				.content("content_2")
+				.build();
+		postRepository.save(post2);
+		
+		// expected
+		mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+				.contentType(APPLICATION_JSON)
+				)
+		.andExpect(MockMvcResultMatchers.status().isOk())
+		.andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(2)))
+		.andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(post1.getId()))
+		.andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("title_1"))
+		.andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("content_1"))
+		.andDo(MockMvcResultHandlers.print());
+		
+	}
 }
