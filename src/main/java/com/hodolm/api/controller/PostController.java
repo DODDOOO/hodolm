@@ -5,14 +5,19 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hodolm.api.domain.Post;
 import com.hodolm.api.request.PostCreate;
+import com.hodolm.api.request.PostSearch;
 import com.hodolm.api.response.PostResponse;
 import com.hodolm.api.service.PostService;
 
@@ -141,8 +146,19 @@ public class PostController {
 	
 	// 여러개의 글 조회
 	@GetMapping("/posts")
-	public List<PostResponse> getList() {
+	public List<PostResponse> getList(
+//			@PageableDefault(size=5) 
+//			Pageable pageable
+			@ModelAttribute PostSearch postSearch
+			) {
 		
-		return postService.getList();
+		return postService.getList(postSearch);
 	}
+	
+	/*
+	 * 글이 너무 많은 경우 DB의 모든 글을 조회할 때 발생하는 문제
+	 * 1. 비용이 너무 많이 든다.
+	 * 2. DB가 뻗을 수 있다.
+	 * 3. DB -> 어플리케이션 서버로 전달하는 시간, 트래픽비용이 많이 든다.
+	 */
 }

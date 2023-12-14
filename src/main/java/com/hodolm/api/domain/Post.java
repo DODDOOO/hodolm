@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -40,4 +41,10 @@ public class Post {
 //	public String getTitle() {
 //		return this.title.substring(0, 10);
 //	}
+	
+	// 파라미터 값이 달라지면 버그가 발생할 수 있기 때문에 아래의 toEditor와 같이 만들어 주는 것을 추천한다.
+	public void change(String title, String content) {
+		this.title = title;
+		this.content = content;
+	}
 }

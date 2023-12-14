@@ -1,14 +1,17 @@
 package com.hodolm.api.service;
 
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
 import com.hodolm.api.domain.Post;
 import com.hodolm.api.repository.PostRepository;
 import com.hodolm.api.request.PostCreate;
+import com.hodolm.api.request.PostEdit;
+import com.hodolm.api.request.PostSearch;
 import com.hodolm.api.response.PostResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -55,8 +58,14 @@ public class PostService {
 		return response;
 	}
 
-	public List<PostResponse> getList() {
-		return postRepository.findAll().stream()
+	public List<PostResponse> getList(PostSearch postSearch) {
+		
+//		Pageable pageable = PageRequest.of(page, 5, Sort.by("id").descending());
+		
+		return postRepository
+//				.findAll(pageable)
+				.getList(postSearch)
+				.stream()
 				.map(post -> new PostResponse(post)
 						// 반복되는 작업을 막기위해 PostResponse에서 생성자를 오버로딩하여 사용
 //						PostResponse.builder()
@@ -74,4 +83,14 @@ public class PostService {
 //		
 //		return post;
 //	}
+	
+	@Transactional
+	public void edit(Long id, PostEdit postEdit) {
+		Post post = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글 입니다."));
+		
+		post.change(postEdit.getTitle(), postEdit.getContent());
+		
+		// @Transactional을 사용하면 알아서 save 하기 때문에 postRepository.save(post)를 사용하지 않아도 된다.
+//		postRepository.save(post);
+	}
 }
